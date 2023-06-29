@@ -1,4 +1,4 @@
-package com.truongdc21.todoappwithjetpackcompose
+package com.truongdc21.todoappwithjetpackcompose.screen
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
@@ -22,6 +22,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,12 +37,14 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.truongdc21.todoappwithjetpackcompose.utils.Constant
+import com.truongdc21.todoappwithjetpackcompose.R
 import com.truongdc21.todoappwithjetpackcompose.model.ToDo
 import com.truongdc21.todoappwithjetpackcompose.viewmodel.ToDoViewModel
 
 @SuppressLint("MutableCollectionMutableState")
 @Composable
-fun ToDoListScreen(navController: NavHostController) {
+fun ToDoListScreen(navController: NavHostController, viewModel: ToDoViewModel) {
     Column(
         modifier = Modifier
             .fillMaxSize(1f)
@@ -49,19 +52,16 @@ fun ToDoListScreen(navController: NavHostController) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        DefaultScreen(navController = navController)
-
+        DefaultScreen(navController = navController, viewModel)
     }
 }
 
 @Composable
 private fun DefaultScreen(
     navController: NavHostController,
-    mViewModel: ToDoViewModel = viewModel()
+    mViewModel: ToDoViewModel
 ) {
-    val todoList = remember {
-        mViewModel.todoList
-    }
+    val todoList = mViewModel.mListToDoObserve.observeAsState()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -71,13 +71,13 @@ private fun DefaultScreen(
             navController.navigate(Constant.ADD_TODO_SCREEN)
         }
         LazyColumn() {
-            items(todoList) { todo ->
-                ItemToDo(todo = todo, onTapChecked = {
-                    val index = todoList.indexOf(todo)
-                    todoList[index] = ToDo(todo.id, todo.title, it)
-                })
+            todoList.value?.let { mList ->
+                items(mList) { todo ->
+                    ItemToDo(todo = todo, onTapChecked = {
+                        mViewModel.updateTask(todo = todo)
+                    })
+                }
             }
-
         }
     }
 }
@@ -158,6 +158,6 @@ private fun ItemToDo(todo: ToDo, onTapChecked: (Boolean) -> Unit) {
 private fun PreViewToDoListScreen() {
     val navHostController = rememberNavController()
     Column() {
-        DefaultScreen(navHostController)
+        DefaultScreen(navHostController, viewModel())
     }
 }

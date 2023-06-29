@@ -1,4 +1,4 @@
-package com.truongdc21.todoappwithjetpackcompose
+package com.truongdc21.todoappwithjetpackcompose.utils
 
 object Constant {
     const val TODO_LIST_SCREEN = "To_do_list_screen"

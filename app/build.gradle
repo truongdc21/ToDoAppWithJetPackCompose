@@ -63,5 +63,7 @@ dependencies {
     def nav_compose_version = "2.4.0-alpha06"
     implementation "androidx.navigation:navigation-compose:$nav_compose_version"
     implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:1.0.0-alpha07'
-
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.3.1"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.1"
+    implementation "androidx.compose.runtime:runtime-livedata:1.0.5"
 }
